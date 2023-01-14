@@ -1,5 +1,7 @@
 import os
+
 from pydantic import BaseSettings
+
 from core.utils.load_env import load_environ
 
 _BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

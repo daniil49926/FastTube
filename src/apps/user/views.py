@@ -2,11 +2,10 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
 
+from apps.user.models import User
+from apps.user.serializers import UserIn, UserOut
 from core.db import database
 from core.db.exception_models import Message404
-from apps.user.serializers import UserIn, UserOut
-from apps.user.models import User
-
 
 v1 = APIRouter()
 
@@ -18,7 +17,11 @@ async def get_user(uid: int) -> User:
             select(User).where(User.id == uid, User.is_active == 1)
         )
     user = user.scalars().one_or_none()
-    return user if user else JSONResponse(status_code=404, content={"message": "User not found"})
+    return (
+        user
+        if user
+        else JSONResponse(status_code=404, content={"message": "User not found"})
+    )
 
 
 @v1.post("/users", response_model=UserOut)

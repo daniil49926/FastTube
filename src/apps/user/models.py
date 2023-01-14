@@ -1,11 +1,12 @@
 import datetime
 
-from sqlalchemy import Column, String, Integer, DateTime
+from sqlalchemy import Column, DateTime, Integer, String
+
 from core.db.database import Base
 
 
 class User(Base):
-    __tablename__ = 'User'
+    __tablename__ = "User"
     id: int = Column(Integer, primary_key=True)
     name: str = Column(String, nullable=False)
     surname: str = Column(String, nullable=False)
