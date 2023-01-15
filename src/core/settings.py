@@ -16,7 +16,8 @@ class __Settings(BaseSettings):
     RELOAD: bool = True
     PG_DSN: str = os.environ.get("PG_DSN")
 
-    BASE_DIR = _BASE_DIR
+    BASE_DIR: str = _BASE_DIR
+    TEMPLATE_DIR: str = _BASE_DIR + "/templates"
     MAX_ATTEMPTS_TO_CONN_TO_PG: int = 5
 
 

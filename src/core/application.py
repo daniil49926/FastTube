@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from apps.routers import router
-from core.service.healthchecker import healthchecker_router_v1
+from apps.routers import router as apps_router
+from core.service.routers import router as core_router
 
 _app = None
 
@@ -11,7 +11,7 @@ def get_app():
     if not _app:
         _app = FastAPI(title="FastTube", version="0.0.2", description="")
 
-        _app.include_router(healthchecker_router_v1)
-        _app.include_router(router)
+        _app.include_router(core_router)
+        _app.include_router(apps_router)
 
     return _app
