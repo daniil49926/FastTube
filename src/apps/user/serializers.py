@@ -1,4 +1,5 @@
 import uuid
+
 from fastapi_users.schemas import BaseUser, BaseUserCreate, BaseUserUpdate
 from pydantic import BaseModel
 

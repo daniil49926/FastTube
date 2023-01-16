@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from apps.user.models import User
-from apps.user.serializers import UserRead, UserCreate, UserUpdate
+from apps.user.serializers import UserCreate, UserRead, UserUpdate
 from apps.user.utils import auth_backend, current_active_user, fastapi_users
 
 v1 = APIRouter()
@@ -34,4 +34,3 @@ v1.include_router(
 @v1.get("/authenticated-route")
 async def authenticated_route(user: User = Depends(current_active_user)):
     return {"message": f"Hello {user.email}!"}
-

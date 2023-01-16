@@ -1,5 +1,5 @@
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, Integer, String
 
 from core.db.database import Base
 
