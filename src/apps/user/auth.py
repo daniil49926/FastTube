@@ -1,9 +1,15 @@
+import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from jose import JWTError, jwt
 from sqlalchemy.future import select
 
 from apps.user.models import User
+from apps.user.serializers import TokenData
 from core.db import database
+from core.security.auth_security import create_access_token, verify_password
+from core.settings import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -16,7 +22,7 @@ async def read_token(_token: str = Depends(oauth2_scheme)):
 
 
 @v1.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
     async with database.session.begin():
         user = await database.session.execute(
             select(User).where(
@@ -25,16 +31,48 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         )
     user = user.scalars().one_or_none()
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username")
-    hashed_password = fake_hash_password(form_data.password)
-    if not hashed_password == user.hashed_password:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
-    return {"access_token": user.username, "token_type": "bearer"}
+    access_token = create_access_token(
+        data={"sub": user.username},
+        expires_delta=datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
-    user = await fake_decode_token(token)
+    try:
+        payload = jwt.decode(
+            token, settings.CRYPTO_KEY, algorithms=[settings.ALGORITHM]
+        )
+        username: str = payload.get("sub")
+        if username is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        token_data = TokenData(username=username)
+        if not token_data:
+            raise JWTError
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    user = await get_user(token_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -50,10 +88,6 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-async def fake_decode_token(token):
-    return await get_user(token)
-
-
 async def get_user(username: str):
     async with database.session.begin():
         user = await database.session.execute(
@@ -61,7 +95,3 @@ async def get_user(username: str):
         )
     user = user.scalars().one_or_none()
     return user
-
-
-def fake_hash_password(password: str):
-    return "fakehashed" + password

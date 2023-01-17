@@ -20,5 +20,9 @@ class __Settings(BaseSettings):
     TEMPLATE_DIR: str = _BASE_DIR + "/templates"
     MAX_ATTEMPTS_TO_CONN_TO_PG: int = 5
 
+    CRYPTO_KEY: bytes = os.environ.get("CRYPTO_KEY")
+    ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 720
+
 
 settings = __Settings()
