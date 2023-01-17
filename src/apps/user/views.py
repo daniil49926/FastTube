@@ -43,6 +43,6 @@ async def add_user(user: UserIn) -> User:
     return user
 
 
-@v1.get("/me")
+@v1.get("/me", response_model=UserOut)
 async def get_me(current_user: User = Depends(get_current_active_user)):
     return current_user
