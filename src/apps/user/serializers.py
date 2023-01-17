@@ -1,22 +1,41 @@
-import uuid
+import datetime
 
-from fastapi_users.schemas import BaseUser, BaseUserCreate, BaseUserUpdate
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, validator
 
 
-class ExtendsUser(BaseModel):
+class BaseUser(BaseModel):
     name: str
     surname: str
-    nickname: str
+    gender: int
+    email: EmailStr
+
+    @validator("name", "surname")
+    def name_contain_space(cls, v):
+        if " " in v:
+            raise ValueError("Name or surname contain space")
+        return v
+
+    class Config:
+        orm_mode = True
+
+    @validator("name", "surname")
+    def name_contain_numeric(cls, v):
+        if not v.isalpha:
+            raise ValueError("Name or surname contains numbers")
+        return v
+
+    @validator("gender")
+    def valid_gender(cls, v):
+        if v not in [0, 1, 2]:
+            raise ValueError("Gender is entered incorrectly")
+        return v
 
 
-class UserRead(BaseUser[uuid.UUID], ExtendsUser):
-    pass
+class UserIn(BaseUser):
+    password: str
 
 
-class UserCreate(BaseUserCreate, ExtendsUser):
-    pass
-
-
-class UserUpdate(BaseUserUpdate, ExtendsUser):
-    pass
+class UserOut(BaseUser):
+    id: int
+    created_at: datetime.datetime
+    is_active: int
