@@ -6,6 +6,7 @@ from pydantic import BaseModel, EmailStr, validator
 class BaseUser(BaseModel):
     name: str
     surname: str
+    username: str
     gender: int
     email: EmailStr
 
@@ -29,6 +30,10 @@ class BaseUser(BaseModel):
         if v not in [0, 1, 2]:
             raise ValueError("Gender is entered incorrectly")
         return v
+
+
+class UserInDB(BaseUser):
+    hashed_password: str
 
 
 class UserIn(BaseUser):

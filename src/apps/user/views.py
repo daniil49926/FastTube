@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
 
+from apps.user.auth import fake_hash_password, get_current_active_user
 from apps.user.models import User
-from apps.user.serializers import UserIn, UserOut
+from apps.user.serializers import UserIn, UserInDB, UserOut
 from core.db import database
 from core.db.exception_models import Message404
 
@@ -26,7 +27,21 @@ async def get_user(uid: int) -> User:
 
 @v1.post("/users", response_model=UserOut)
 async def add_user(user: UserIn) -> User:
-    user = User(**user.dict())
+    hash_pass = fake_hash_password(user.password)
+    new_user = UserInDB(
+        name=user.name,
+        surname=user.surname,
+        username=user.username,
+        gender=user.gender,
+        email=user.email,
+        hashed_password=hash_pass,
+    )
+    user = User(**new_user.dict())
     async with database.session.begin():
         database.session.add(user)
     return user
+
+
+@v1.get("/me")
+async def get_me(current_user: User = Depends(get_current_active_user)):
+    return current_user
