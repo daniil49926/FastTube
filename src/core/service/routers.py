@@ -7,4 +7,3 @@ router = APIRouter()
 router.include_router(
     healthchecker_router_v1, prefix="/healthchecker/v1", tags=["healthchecker"]
 )
-
