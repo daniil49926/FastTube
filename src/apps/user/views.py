@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
 
-from apps.user.auth import get_current_active_user
+from apps.auth.utils import get_current_active_user
 from apps.user.models import User
 from apps.user.serializers import UserIn, UserInDB, UserOut
 from core.db import database

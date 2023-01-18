@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from apps.user.auth import v1 as auth_v1
+from apps.auth.views import v1 as auth_v1
 from apps.user.views import v1 as user_v1
 from apps.video.views import v1 as video_v1
 

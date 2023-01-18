@@ -44,7 +44,3 @@ class UserOut(BaseUser):
     id: int
     created_at: datetime.datetime
     is_active: int
-
-
-class TokenData(BaseModel):
-    username: str | None = None
