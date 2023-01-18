@@ -1,10 +1,11 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends
 
 # from fastapi.responses import JSONResponse, StreamingResponse
 from sqlalchemy.future import select
 
+from apps.user.auth import get_current_active_user
 from apps.user.models import User
 from apps.video.models import Video
 from apps.video.serializers import VideoOut
@@ -34,9 +35,10 @@ async def create_video(
     file: UploadFile = File(...),
     title: str = Form(...),
     description: str = Form(...),
+    current_user: User = Depends(get_current_active_user)
 ) -> Video:
     async with database.session.begin():
-        user_id = await database.session.execute(select(User.id))
+        user_id = await database.session.execute(select(current_user.id))
     uid = user_id.scalars().first()
     file_path = (
         f"{settings.BASE_DIR}/media/{uid}_{uuid4()}.{file.filename.split('.')[-1]}"
