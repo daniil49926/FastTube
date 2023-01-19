@@ -1,5 +1,5 @@
-from uuid import uuid4
 from builtins import object
+from uuid import uuid4
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
@@ -37,7 +37,7 @@ async def create_video(
     title: str = Form(...),
     description: str = Form(...),
     current_user: User = Depends(get_current_active_user),
-    session: object = Depends(get_db)
+    session: object = Depends(get_db),
 ) -> Video:
     async with session.begin():
         user_id = await session.execute(select(current_user.id))

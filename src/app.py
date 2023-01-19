@@ -1,8 +1,8 @@
-import uvicorn
+from builtins import object
 
+import uvicorn
 from fastapi import Depends
 
-from builtins import object
 from core.application import get_app
 from core.db import database
 from core.db.database import get_db

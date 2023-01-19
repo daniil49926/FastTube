@@ -1,4 +1,5 @@
 from builtins import object
+
 from fastapi import APIRouter, Depends
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
@@ -20,8 +21,12 @@ async def player(request: Request, vid: int):
 
 
 @v1.get("/get_video/{vid}")
-async def get_video_for_player(request: Request, vid: int, session: object = Depends(get_db)) -> StreamingResponse:
-    file, status_code, content_length, headers = await stream_video(request, vid, session)
+async def get_video_for_player(
+    request: Request, vid: int, session: object = Depends(get_db)
+) -> StreamingResponse:
+    file, status_code, content_length, headers = await stream_video(
+        request, vid, session
+    )
     response = StreamingResponse(file, media_type="video/mp4", status_code=status_code)
     response.headers.update(
         {

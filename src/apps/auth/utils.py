@@ -1,4 +1,5 @@
 from builtins import object
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -16,7 +17,9 @@ def get_oauth2_scheme():
     return oauth2_scheme
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), session: object = Depends(get_db)):
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), session: object = Depends(get_db)
+):
     try:
         payload = jwt.decode(
             token, settings.CRYPTO_KEY, algorithms=[settings.ALGORITHM]

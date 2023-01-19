@@ -1,6 +1,6 @@
 import datetime
-
 from builtins import object
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.future import select
@@ -23,8 +23,7 @@ async def read_token(_token: str = Depends(oauth2_scheme)):
 
 @v1.post("/token")
 async def login_for_access_token(
-        form_data: OAuth2PasswordRequestForm = Depends(),
-        session: object = Depends(get_db)
+    form_data: OAuth2PasswordRequestForm = Depends(), session: object = Depends(get_db)
 ):
     async with session.begin():
         user = await session.execute(

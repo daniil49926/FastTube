@@ -1,6 +1,6 @@
+from builtins import object
 from pathlib import Path
 from typing import IO, Generator
-from builtins import object
 
 import aiofiles
 from fastapi import HTTPException, UploadFile
@@ -36,11 +36,7 @@ def ranged(
         file.close()
 
 
-async def stream_video(
-        request: Request,
-        video_id: int,
-        session: object
-) -> tuple:
+async def stream_video(request: Request, video_id: int, session: object) -> tuple:
     async with session.begin():
         video_path = await session.execute(
             select(Video.file_path).where(Video.id == video_id)

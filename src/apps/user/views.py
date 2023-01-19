@@ -1,4 +1,5 @@
 from builtins import object
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
