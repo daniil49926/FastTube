@@ -4,5 +4,5 @@ healthchecker_router_v1 = APIRouter()
 
 
 @healthchecker_router_v1.get("/test")
-def test():
+def healthchecker_test():
     return {"result": "OK"}

@@ -1,7 +1,11 @@
 import uvicorn
 
+from fastapi import Depends
+
+from builtins import object
 from core.application import get_app
 from core.db import database
+from core.db.database import get_db
 from core.settings import settings
 
 app = get_app()
@@ -14,8 +18,8 @@ async def shutdown():
 
 
 @app.on_event("shutdown")
-async def shutdown():
-    await database.session.close()
+async def shutdown(session: object = Depends(get_db)):
+    await session.close()
     await database.engine.dispose()
 
 

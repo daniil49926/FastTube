@@ -1,4 +1,5 @@
 from uuid import uuid4
+from builtins import object
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
@@ -10,7 +11,7 @@ from apps.user.models import User
 from apps.video.models import Video
 from apps.video.serializers import VideoOut
 from apps.video.utils import write_video
-from core.db import database
+from core.db.database import get_db
 from core.db.exception_models import Message418  # , Message404
 from core.settings import settings
 
@@ -36,9 +37,10 @@ async def create_video(
     title: str = Form(...),
     description: str = Form(...),
     current_user: User = Depends(get_current_active_user),
+    session: object = Depends(get_db)
 ) -> Video:
-    async with database.session.begin():
-        user_id = await database.session.execute(select(current_user.id))
+    async with session.begin():
+        user_id = await session.execute(select(current_user.id))
     uid = user_id.scalars().first()
     file_path = (
         f"{settings.BASE_DIR}/media/{uid}_{uuid4()}.{file.filename.split('.')[-1]}"
@@ -52,6 +54,6 @@ async def create_video(
     new_v = Video(
         title=title, description=description, file_path=file_path, user_id=uid
     )
-    async with database.session.begin():
-        database.session.add(new_v)
+    async with session.begin():
+        session.add(new_v)
     return new_v

@@ -1,3 +1,4 @@
+from builtins import object
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from sqlalchemy.future import select
@@ -5,7 +6,7 @@ from sqlalchemy.future import select
 from apps.auth.utils import get_current_active_user
 from apps.user.models import User
 from apps.user.serializers import UserIn, UserInDB, UserOut
-from core.db import database
+from core.db.database import get_db
 from core.db.exception_models import Message404
 from core.security.auth_security import get_password_hash
 
@@ -13,9 +14,9 @@ v1 = APIRouter()
 
 
 @v1.get("/users/{uid}", response_model=UserOut, responses={404: {"model": Message404}})
-async def get_user(uid: int) -> User:
-    async with database.session.begin():
-        user = await database.session.execute(
+async def get_user(uid: int, session=Depends(get_db)) -> User:
+    async with session.begin():
+        user = await session.execute(
             select(User).where(User.id == uid, User.is_active == 1)
         )
     user = user.scalars().one_or_none()
@@ -27,7 +28,7 @@ async def get_user(uid: int) -> User:
 
 
 @v1.post("/users", response_model=UserOut)
-async def add_user(user: UserIn) -> User:
+async def add_user(user: UserIn, session: object = Depends(get_db)) -> User:
     hash_pass = get_password_hash(user.password)
     new_user = UserInDB(
         name=user.name,
@@ -38,8 +39,8 @@ async def add_user(user: UserIn) -> User:
         hashed_password=hash_pass,
     )
     user = User(**new_user.dict())
-    async with database.session.begin():
-        database.session.add(user)
+    async with session.begin():
+        session.add(user)
     return user
 
 

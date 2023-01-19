@@ -1,3 +1,4 @@
+from builtins import object
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
@@ -5,7 +6,7 @@ from sqlalchemy.future import select
 
 from apps.auth.serializers import TokenData
 from apps.user.models import User
-from core.db import database
+from core.db.database import get_db
 from core.settings import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -15,7 +16,7 @@ def get_oauth2_scheme():
     return oauth2_scheme
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme), session: object = Depends(get_db)):
     try:
         payload = jwt.decode(
             token, settings.CRYPTO_KEY, algorithms=[settings.ALGORITHM]
@@ -36,7 +37,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = await get_user(token_data.username)
+    user = await get_user(token_data.username, session)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -52,9 +53,9 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-async def get_user(username: str):
-    async with database.session.begin():
-        user = await database.session.execute(
+async def get_user(username: str, session):
+    async with session.begin():
+        user = await session.execute(
             select(User).where(User.username == username and User.is_active == 1)
         )
     user = user.scalars().one_or_none()

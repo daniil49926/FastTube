@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import IO, Generator
+from builtins import object
 
 import aiofiles
 from fastapi import HTTPException, UploadFile
@@ -7,7 +8,6 @@ from sqlalchemy.future import select
 from starlette.requests import Request
 
 from apps.video.models import Video
-from core.db import database
 
 
 async def write_video(file_name: str, file: UploadFile) -> None:
@@ -36,9 +36,13 @@ def ranged(
         file.close()
 
 
-async def stream_video(request: Request, video_id: int) -> tuple:
-    async with database.session.begin():
-        video_path = await database.session.execute(
+async def stream_video(
+        request: Request,
+        video_id: int,
+        session: object
+) -> tuple:
+    async with session.begin():
+        video_path = await session.execute(
             select(Video.file_path).where(Video.id == video_id)
         )
     video_path = video_path.scalars().one_or_none()
