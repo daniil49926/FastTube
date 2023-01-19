@@ -10,9 +10,8 @@ DATABASE_URL = settings.PG_DSN
 
 CONNECT_TRY = settings.MAX_ATTEMPTS_TO_CONN_TO_PG
 
-if DATABASE_URL:
-    engine = create_async_engine("postgresql+asyncpg://" + DATABASE_URL, echo=True)
-    async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+engine = create_async_engine("postgresql+asyncpg://" + DATABASE_URL, echo=True)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 Base = declarative_base()
 

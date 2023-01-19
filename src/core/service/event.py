@@ -1,5 +1,7 @@
 from builtins import object
-from fastapi import Depends, APIRouter
+
+from fastapi import APIRouter, Depends
+
 from core.db import database
 from core.db.database import get_db
 
