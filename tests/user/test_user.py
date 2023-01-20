@@ -1,28 +1,27 @@
+from typing import Dict
+
+import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-from app import app
-from core.db.database import get_db
-
-TEST_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
-
-engine = create_async_engine(
-    TEST_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def override_get_db():
-    db = TestingSessionLocal()
-    yield db
+class TestUsers:
+    @pytest.fixture
+    def user_fixt(self) -> Dict[str, str]:
+        return {
+            "name": "Oussama",
+            "surname": "Benladen",
+            "username": "Shached338",
+            "gender": 1,
+            "email": "shached338@example.com",
+            "password": "S@udiArabiaB_hhh338",
+        }
 
-
-app.dependency_overrides[get_db] = override_get_db
-client = TestClient(app)
-
-
-def test_healthchecker():
-    response = client.get("/healthchecker/v1/test")
-    assert response.status_code == 200
-    assert response.json() == {"result": "OK"}
+    def test_valid_user(
+        self,
+        app: FastAPI,
+        client: TestClient,
+        user_fixt: Dict[str, str],
+    ):
+        response = client.post(url="/user/v1/users", json=user_fixt)
+        assert response.status_code == 200
