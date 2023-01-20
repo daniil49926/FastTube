@@ -24,5 +24,7 @@ class __Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 720
 
+    TESTING: bool = os.environ.get("TESTING")
+
 
 settings = __Settings()

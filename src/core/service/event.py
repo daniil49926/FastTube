@@ -1,9 +1,6 @@
-from builtins import object
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from core.db import database
-from core.db.database import get_db
 
 event_router = APIRouter()
 
@@ -15,6 +12,6 @@ async def startup():
 
 
 @event_router.on_event("shutdown")
-async def shutdown(session: object = Depends(get_db)):
-    await session.close()
+async def shutdown():
+    await database.async_session().close()
     await database.engine.dispose()
