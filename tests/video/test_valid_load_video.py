@@ -42,7 +42,7 @@ class TestValidLoadVideo:
             files={
                 "file": (
                     "test_name.mp4",
-                    open(f"{media_path}\\ValidVideo.mp4", "rb"),
+                    open(f"{media_path}/ValidVideo.mp4", "rb"),
                     "video/mp4",
                 )
             },
