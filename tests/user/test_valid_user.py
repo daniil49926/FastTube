@@ -6,35 +6,35 @@ from fastapi.testclient import TestClient
 
 
 @pytest.mark.parametrize(
-        "user", [
-            {
-                "name": "Oussama",
-                "surname": "Benladen",
-                "username": "Shached338",
-                "gender": 1,
-                "email": "shached338@example.com",
-                "password": "S@udiArabiaB_hhh338",
-            },
-            {
-                "name": "Testname",
-                "surname": "Testsurname",
-                "username": "super_user3023",
-                "gender": 0,
-                "email": "supermario@example.com",
-                "password": "Prosto_p*ssw0rd",
-            },
-            {
-                "name": "Ketrin",
-                "surname": "Belloboss",
-                "username": "belloboss99",
-                "gender": 2,
-                "email": "bellobosss99@example.com",
-                "password": "SamiySecretniyParol_$123",
-            }
-        ]
-    )
+    "user",
+    [
+        {
+            "name": "Oussama",
+            "surname": "Benladen",
+            "username": "Shached338",
+            "gender": 1,
+            "email": "shached338@example.com",
+            "password": "S@udiArabiaB_hhh338",
+        },
+        {
+            "name": "Testname",
+            "surname": "Testsurname",
+            "username": "super_user3023",
+            "gender": 0,
+            "email": "supermario@example.com",
+            "password": "Prosto_p*ssw0rd",
+        },
+        {
+            "name": "Ketrin",
+            "surname": "Belloboss",
+            "username": "belloboss99",
+            "gender": 2,
+            "email": "bellobosss99@example.com",
+            "password": "SamiySecretniyParol_$123",
+        },
+    ],
+)
 class TestValidUsers:
-
     def test_valid_create_user(
         self,
         app: FastAPI,
