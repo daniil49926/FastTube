@@ -64,3 +64,14 @@ class TestUsers:
         assert response.status_code == 200
         assert response.json()["name"] == user_fixt.get("name")
         assert response.json()["username"] == user_fixt.get("username")
+
+    def test_get_user_by_uid(
+        self,
+        app: FastAPI,
+        client: TestClient,
+        user_fixt: Dict[str, str],
+    ):
+        response = client.post(url="/user/v1/users", json=user_fixt)
+        response = client.get(url=f"/user/v1/users/{response.json()['id']}")
+        assert response.status_code == 200
+        assert response.json()["name"] == user_fixt.get("name")
