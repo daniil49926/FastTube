@@ -17,3 +17,15 @@ def client(app: FastAPI) -> Generator[TestClient, Any, None]:
 
     with TestClient(app) as client:
         yield client
+
+
+@pytest.fixture()
+def user_fixt():
+    return {
+        "name": "Ketrin",
+        "surname": "Belloboss",
+        "username": "belloboss99",
+        "gender": 2,
+        "email": "bellobosss99@example.com",
+        "password": "SamiySecretniyParol_$123",
+    }

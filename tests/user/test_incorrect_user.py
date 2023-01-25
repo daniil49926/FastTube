@@ -6,17 +6,6 @@ from fastapi.testclient import TestClient
 
 
 class TestIncorrectUser:
-    @pytest.fixture()
-    def user_fixt(self):
-        return {
-            "name": "Ketrin",
-            "surname": "Belloboss",
-            "username": "belloboss99",
-            "gender": 2,
-            "email": "bellobosss99@example.com",
-            "password": "SamiySecretniyParol_$123",
-        }
-
     @pytest.mark.parametrize(
         "user",
         [

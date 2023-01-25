@@ -1,23 +1,11 @@
 import os
 from typing import Dict
 
-import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 
 class TestValidLoadVideo:
-    @pytest.fixture()
-    def user_fixt(self):
-        return {
-            "name": "Ketrin",
-            "surname": "Belloboss",
-            "username": "belloboss99",
-            "gender": 2,
-            "email": "bellobosss99@example.com",
-            "password": "SamiySecretniyParol_$123",
-        }
-
     def test_valid_load_video(
         self,
         app: FastAPI,
