@@ -36,7 +36,10 @@ class TestValidLoadVideo:
                 "client_secret": "",
             },
         )
-        media_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "media_for_test")
+        media_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "media_for_test",
+        )
         response = client.post(
             url="/video/v1/video/",
             files={
