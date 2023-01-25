@@ -8,12 +8,14 @@ from sqlalchemy.future import select
 from starlette.requests import Request
 
 from apps.video.models import Video
+from core.settings import settings
 
 
 async def write_video(file_name: str, file: UploadFile) -> None:
-    async with aiofiles.open(file_name, "wb") as buffer:
-        data = await file.read()
-        await buffer.write(data)
+    if not settings.TESTING:
+        async with aiofiles.open(file_name, "wb") as buffer:
+            data = await file.read()
+            await buffer.write(data)
 
 
 def ranged(
