@@ -1,0 +1,46 @@
+import os
+from typing import Dict
+
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
+
+class TestIncorrectLoadVideo:
+    def test_incorrect_load_video(
+        self,
+        app: FastAPI,
+        client: TestClient,
+        user_fixt: Dict[str, str],
+    ):
+        _ = client.post(url="/user/v1/users", json=user_fixt)
+        response = client.post(
+            url="/token",
+            data={
+                "grant_type": "",
+                "username": user_fixt.get("username"),
+                "password": user_fixt.get("password"),
+                "scope": "",
+                "client_id": "",
+                "client_secret": "",
+            },
+        )
+        media_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            "media_for_test",
+        )
+        response = client.post(
+            url="/video/v1/video/",
+            files={
+                "file": (
+                    "test_name.jpg",
+                    open(f"{media_path}/test.jpg", "rb"),
+                    "image/jpg",
+                )
+            },
+            data={"title": "test", "description": "test_description"},
+            headers={
+                "Authorization": f"{response.json()['token_type']} {response.json()['access_token']}",
+                "Content-type": "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW",
+            },
+        )
+        assert response.status_code == 418
