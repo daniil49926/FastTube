@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 
 import pytest
@@ -35,12 +36,13 @@ class TestValidLoadVideo:
                 "client_secret": "",
             },
         )
+        media_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "media_for_test")
         response = client.post(
             url="/video/v1/video/",
             files={
                 "file": (
                     "test_name.mp4",
-                    open("media_for_test/ValidVideo.mp4", "rb"),
+                    open(f"{media_path}\\ValidVideo.mp4", "rb"),
                     "video/mp4",
                 )
             },
