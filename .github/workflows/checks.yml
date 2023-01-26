@@ -20,6 +20,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Run black
-        run: black --check --diff . >> $GITHUB_OUTPUT
+        run: black --check --diff .
       - name: Run isort
-        run: isort --check-only --diff --profile black . >> $GITHUB_OUTPUT
+        run: isort --check-only --diff --profile black .
