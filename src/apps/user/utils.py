@@ -41,7 +41,7 @@ async def send_verify_on_email(email: str, username: str, uid: int):
         mess["Subject"] = subject
         server_ssl.sendmail(settings.MAIL_USER, to, mess.as_string())
         redis_ = get_redis_conn()
-        redis_.setex(key_for_verify, timedelta(minutes=5), value=val_for_varify)
+        redis_.setex(key_for_verify, timedelta(minutes=30), value=val_for_varify)
 
     except Exception as e:
         print(e)

@@ -9,7 +9,7 @@ from apps.user.models import User
 from apps.user.serializers import UserIn, UserInDB, UserOut
 from apps.user.utils import send_verify_on_email
 from core.db.database import get_db
-from core.db.exception_models import Message404
+from core.db.exception_models import Message403, Message404, Message500
 from core.redisdb.redisdb import get_redis_conn
 from core.security.auth_security import get_password_hash
 
@@ -57,21 +57,37 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
     return current_user
 
 
-@v1.get("/verify-email/{uid}/{link_body}")
+@v1.get(
+    "/verify-email/{uid}/{link_body}",
+    response_model=UserOut,
+    responses={
+        403: {"model": Message403},
+        404: {"model": Message404},
+        500: {"model": Message500},
+    },
+)
 async def confirm_email(uid: int, link_body: str, session: object = Depends(get_db)):
     redis_ = get_redis_conn()
     if not redis_:
         return JSONResponse(
             status_code=500, content={"message": "Server error plz try letter"}
         )
-    op_rez = redis_.get(f"{uid}").decode("utf-8")
+    op_rez = redis_.get(f"{uid}")
+
     if not op_rez:
         return JSONResponse(status_code=404, content={"message": "Unable to confirm"})
-    if op_rez == link_body:
+    if op_rez.decode("utf-8") == link_body:
         async with session.begin():
             user = await session.execute(select(User).where(User.id == uid))
         user = user.scalars().one_or_none()
         user.is_active = 1
         await session.commit()
+        redis_.delete(f"{uid}")
         return user
-    return JSONResponse(status_code=403, content={"message": "Unable to confirm"})
+    return JSONResponse(
+        status_code=403,
+        content={
+            "message": "Unable to confirm",
+            "additional_information": "The link is not valid",
+        },
+    )
