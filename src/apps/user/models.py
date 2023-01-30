@@ -3,6 +3,7 @@ import datetime
 from sqlalchemy import Column, DateTime, Integer, String
 
 from core.db.database import Base
+from core.settings import settings
 
 
 class User(Base):
@@ -15,4 +16,4 @@ class User(Base):
     email: str = Column(String, nullable=False, unique=True)
     hashed_password: str = Column(String, nullable=False)
     created_at: datetime.datetime = Column(DateTime, default=datetime.datetime.now())
-    is_active: int = Column(Integer, nullable=False, default=0)
+    is_active: int = Column(Integer, nullable=False, default=0 if not settings.TESTING else 1)
