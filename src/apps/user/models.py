@@ -16,4 +16,6 @@ class User(Base):
     email: str = Column(String, nullable=False, unique=True)
     hashed_password: str = Column(String, nullable=False)
     created_at: datetime.datetime = Column(DateTime, default=datetime.datetime.now())
-    is_active: int = Column(Integer, nullable=False, default=0 if not settings.TESTING else 1)
+    is_active: int = Column(
+        Integer, nullable=False, default=0 if not settings.TESTING else 1
+    )
