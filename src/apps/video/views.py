@@ -1,9 +1,15 @@
 from builtins import object
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
-
-# from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    File,
+    Form,
+    HTTPException,
+    UploadFile,
+)
 from sqlalchemy.future import select
 
 from apps.auth.utils import get_current_active_user
@@ -12,27 +18,15 @@ from apps.video.models import Video
 from apps.video.serializers import VideoOut
 from apps.video.utils import write_video
 from core.db.database import get_db
-from core.db.exception_models import Message418  # , Message404
+from core.db.exception_models import Message418
 from core.settings import settings
 
 v1 = APIRouter()
 
 
-# @v1.get("/video/{vid}", response_model=VideoOut, responses={404: {"model": Message404}})
-# async def get_video(vid: int) -> StreamingResponse | JSONResponse:
-#     async with database.session.begin():
-#         video_path = await database.session.execute(
-#             select(Video.file_path).where(Video.id == vid, Video.in_ban_list == 0)
-#         )
-#     video_path = video_path.scalars().one_or_none()
-#     if not video_path:
-#         return JSONResponse(status_code=404, content={"message": "Video not found"})
-#     video = await read_video(video_path)
-#     return StreamingResponse(video, media_type="video/mp4")
-
-
 @v1.post("/video/", response_model=VideoOut, responses={418: {"model": Message418}})
 async def create_video(
+    background_task: BackgroundTasks,
     file: UploadFile = File(...),
     title: str = Form(...),
     description: str = Form(...),
@@ -47,7 +41,7 @@ async def create_video(
     )
 
     if file.content_type == "video/mp4":
-        await write_video(file_path, file)
+        background_task.add_task(write_video, file_name=file_path, file=file)
     else:
         raise HTTPException(status_code=418, detail="It isn't mp4")
 
