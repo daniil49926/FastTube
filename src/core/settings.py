@@ -24,6 +24,14 @@ class __Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 720
 
+    MAIL_USER: str = os.environ.get("MAIL_USER")
+    MAIL_PASSWORD: str = os.environ.get("MAIL_PASS")
+
+    REDIS_HOST: str = os.environ.get("REDIS_HOST")
+    REDIS_LOGIN: str = os.environ.get("REDIS_LOGIN")
+    REDIS_PWD: str = os.environ.get("REDIS_PWD")
+    REDIS_PORT: int = os.environ.get("REDIS_PORT")
+
     TESTING: bool = os.environ.get("TESTING")
 
 
