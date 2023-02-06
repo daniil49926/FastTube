@@ -4,7 +4,7 @@ import string
 from datetime import timedelta
 from email.mime.text import MIMEText
 
-from core.redisdb.redisdb import get_redis_conn
+from core.redisdb.redisdb import async_redis
 from core.settings import settings
 
 
@@ -40,8 +40,8 @@ async def send_verify_on_email(email: str, username: str, uid: int):
         mess["To"] = email
         mess["Subject"] = subject
         server_ssl.sendmail(settings.MAIL_USER, to, mess.as_string())
-        redis_ = get_redis_conn()
-        redis_.setex(key_for_verify, timedelta(minutes=30), value=val_for_varify)
+        redis_ = await async_redis.get_async_redis()
+        await redis_.setex(key_for_verify, timedelta(minutes=30), value=val_for_varify)
 
     except Exception as e:
         print(e)

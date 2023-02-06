@@ -10,7 +10,7 @@ from apps.user.serializers import UserIn, UserInDB, UserOut
 from apps.user.utils import send_verify_on_email
 from core.db.database import get_db
 from core.db.exception_models import Message403, Message404, Message500
-from core.redisdb.redisdb import get_redis_conn
+from core.redisdb.redisdb import async_redis
 from core.security.auth_security import get_password_hash
 
 v1 = APIRouter()
@@ -67,12 +67,12 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
     },
 )
 async def confirm_email(uid: int, link_body: str, session: object = Depends(get_db)):
-    redis_ = get_redis_conn()
+    redis_ = await async_redis.get_async_redis()
     if not redis_:
         return JSONResponse(
             status_code=500, content={"message": "Server error plz try letter"}
         )
-    op_rez = redis_.get(f"{uid}")
+    op_rez = await redis_.get(f"{uid}")
 
     if not op_rez:
         return JSONResponse(status_code=404, content={"message": "Unable to confirm"})
@@ -82,7 +82,7 @@ async def confirm_email(uid: int, link_body: str, session: object = Depends(get_
         user = user.scalars().one_or_none()
         user.is_active = 1
         await session.commit()
-        redis_.delete(f"{uid}")
+        await redis_.delete(f"{uid}")
         return user
     return JSONResponse(
         status_code=403,
