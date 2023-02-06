@@ -18,7 +18,10 @@ class __AsyncRedisClient:
         await self.__check_conn()
 
     async def __check_conn(self) -> None:
-        await self.__as_redis.ping()
+        try:
+            await self.__as_redis.ping()
+        except aioredis.exceptions.ConnectionError as e:
+            print(e)
 
     async def get_async_redis(self):
         if self.__as_redis is None:
