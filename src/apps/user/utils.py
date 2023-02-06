@@ -10,6 +10,9 @@ from core.settings import settings
 
 async def send_verify_on_email(email: str, username: str, uid: int):
 
+    if settings.TESTING:
+        return
+
     letters = string.ascii_lowercase
     key_for_verify = uid
     val_for_varify = "".join(random.choice(letters) for _ in range(20))
