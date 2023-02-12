@@ -32,6 +32,8 @@ class __Settings(BaseSettings):
     REDIS_PWD: str = os.environ.get("REDIS_PWD")
     REDIS_PORT: int = os.environ.get("REDIS_PORT")
 
+    ANALYTICS_SERVER_URL: str = os.environ.get("ANALYTICS_SERVER_URL")
+
     TESTING: bool = os.environ.get("TESTING")
 
 
