@@ -23,10 +23,11 @@ class AnalyticsMiddleware(BaseHTTPMiddleware):
             request.method, request.url, process_time, response.status_code
         )
 
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{settings.ANALYTICS_SERVER_URL}/send-analytics", data=data_on_analyze
-            ) as _:
-                pass
+        if settings.ANALYTICS_SERVER_URL:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(
+                    f"{settings.ANALYTICS_SERVER_URL}/send-analytics", data=data_on_analyze
+                ) as _:
+                    pass
 
         return response
