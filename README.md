@@ -57,6 +57,7 @@ GET /healthchecker/v1/test
 
 </details>
 
+***
 2. Request to get user:
 
 **Request**
@@ -112,6 +113,8 @@ GET /user/v1/users/{uid:integer}
 ```
 
 </details>
+
+***
 
 3. Request to add user.
 
@@ -173,6 +176,8 @@ POST /user/v1/users
 ```
 
 </details>
+
+***
 
 more methods in progress...
 
