@@ -157,7 +157,6 @@ POST /user/v1/users
 <details>
 <summary>Response 422</summary>
 
-**Response 422**
 ```json
 {
   "detail": [
