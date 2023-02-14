@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "formatters": {
+    "mainLogger": {
+      "format": "%(asctime)s - %(levelname)s : %(client_ip)s -- %(method)s - %(url)s - %(message)s"
+    }
+  },
+  "handlers": {
+    "file": {
+      "class": "logging.handlers.RotatingFileHandler",
+      "level": "DEBUG",
+      "formatter": "mainLogger",
+      "filename": "../logs/FastTube.log"
+    }
+  },
+  "loggers": {
+    "main": {
+      "level": "DEBUG",
+      "handlers": ["file"]
+    }
+  }
+}
