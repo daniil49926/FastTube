@@ -51,3 +51,11 @@ async def create_video(
     async with session.begin():
         session.add(new_v)
     return new_v
+
+
+@v1.get("/video/list-video/", response_model=list[VideoOut])
+async def list_of_videos(session: object = Depends(get_db)) -> list[Video]:
+    async with session.begin():
+        videos = await session.execute(select(Video))
+    videos = videos.scalars().all()
+    return videos
